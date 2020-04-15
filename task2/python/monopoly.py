@@ -40,9 +40,9 @@ class Player:
         self.money += Player.income
 
     def payDue(self):
-        print(cur_player.name,"In:",Player.income,"tax:",Player.tax_rate)
+        # print(cur_player.name,"In:",Player.income,"tax:",Player.tax_rate)
         self.money += Player.income * (1 - Player.tax_rate)
-        print(cur_player.name,"Out:",Player.due,"handling",Player.handling_fee_rate)
+        # print(cur_player.name,"Out:",Player.due,"handling",Player.handling_fee_rate)
         self.money -= Player.due * (1 + Player.handling_fee_rate)
 
     def printAsset(self):
@@ -184,6 +184,8 @@ class Land:
 
         if cur_player.money < price:
             price = cur_player.money
+
+        print("You need to pay player %s $%d" % ( self.owner.name, price ))
 
         Player.due = price
         Player.income = 0
@@ -342,10 +344,12 @@ def main():
 
         if cur_player.num_rounds_in_jail > 0:
             cur_player.move(0)
+            cur_player_idx = 1 - cur_player_idx
+            cur_player = players[cur_player_idx]
             continue
 
         print("Player %s's turn." % cur_player.name)
-        print("Pay $500 to throw two dices? [y/n]")
+        print("Pay $500 to throw two dice? [y/n]")
 
         throwNum = 1
         while True:
@@ -356,7 +360,7 @@ def main():
             elif ans == 'n':
                 break
             else:
-                print("Pay $500 to throw two dices? [y/n]")
+                print("Pay $500 to throw two dice? [y/n]")
 
         if throwNum == 2:
             if cur_player.money < 500 * (1+0.05):
@@ -381,6 +385,26 @@ def main():
 
         cur_player_idx = 1 - cur_player_idx
         cur_player = players[cur_player_idx]
+
+        while cur_player.num_rounds_in_jail > 0:
+            if cur_player.money < 200:
+                Player.due = cur_player.money
+                Player.income = 0
+                Player.tax_rate = 0.2
+                Player.handling_fee_rate = 0
+                cur_player.payDue()
+            else:
+                Player.due = 200
+                Player.income = 0
+                Player.tax_rate = 0.2
+                Player.handling_fee_rate = 0
+                cur_player.payDue()
+
+            cur_player.move(0)
+            cur_player_idx = 1 - cur_player_idx
+            cur_player = players[cur_player_idx]
+
+
 
     if cur_player.money != 0:
         print("Game over! winner: %s" % cur_player.name)

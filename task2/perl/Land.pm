@@ -108,6 +108,7 @@ sub chargeToll {
         $price = $main::cur_player->{money};
     }
 
+    print "You need to pay player ",$self->{owner}->{name}," \$",$price,"\n";
     local $Player::handling_fee_rate = 0;
     local $Player::due = $price;
     $main::cur_player->payDue();

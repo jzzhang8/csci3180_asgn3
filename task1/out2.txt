@@ -1,1 +1,0 @@
-Error: cards' number 52 can not be divided by players number 3!

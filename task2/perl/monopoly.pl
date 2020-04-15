@@ -121,11 +121,14 @@ sub main {
 
         if($main::cur_player->{num_rounds_in_jail} > 0){
             $main::cur_player->move(0);
+            # change the ongoing player
+            $main::cur_player_idx = 1 - $main::cur_player_idx;
+            $main::cur_player = $main::players[$main::cur_player_idx];
             next;
         }
 
         print "Player ",$main::cur_player->{name},"'s turn.\n";
-        print "Pay \$500 to throw two dices? [y/n]\n";
+        print "Pay \$500 to throw two dice? [y/n]\n";
 
         my $throwNum = 1;
         while(1){
@@ -136,7 +139,7 @@ sub main {
             }elsif($ans eq "n\n"){
                 last;
             }else{
-                print "Pay \$500 to throw two dices? [y/n]\n";
+                print "Pay \$500 to throw two dice? [y/n]\n";
             } 
         }
         
@@ -167,6 +170,21 @@ sub main {
         # change the ongoing player
         $main::cur_player_idx = 1 - $main::cur_player_idx;
         $main::cur_player = $main::players[$main::cur_player_idx];
+
+        while($main::cur_player->{num_rounds_in_jail} > 0){
+            if($main::cur_player->{money} < 200){
+                local $Player::due = $main::cur_player->{money};
+                $main::cur_player->payDue();
+            }else{
+                $main::cur_player->payDue();
+            }
+
+            $main::cur_player->move(0);
+            # change the ongoing player
+            $main::cur_player_idx = 1 - $main::cur_player_idx;
+            $main::cur_player = $main::players[$main::cur_player_idx];
+        }
+
     }
 
     if($main::cur_player->{money} != 0){
